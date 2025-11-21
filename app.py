@@ -1,8 +1,16 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+import os
 
 app = Flask(__name__)
-CORS(app)
+
+@app.route("/")
+def home():
+    return "Backend is running!"
+
+# Required for render (local run)
+if __name__ == "_main_":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 
 patients = []
 next_id = 1
@@ -39,7 +47,6 @@ def add_patient():
         'age': data.get('age')
     }
 
-    # Required fields missing error
     if not patient['name'] or not patient['username'] or not patient['password']:
         return jsonify({"error": "Missing required fields"}), 400
 
@@ -60,9 +67,3 @@ def get_patients():
         } for p in patients
     ]
     return jsonify(result)
-
-
-if __name__ == '__main__':
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
